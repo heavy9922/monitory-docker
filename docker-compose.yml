@@ -4,6 +4,8 @@ volumes:
   grafana-data:
   prometheus-data:
   loki-data:
+  promtail-data:
+
 
 services:
   grafana:
@@ -65,6 +67,18 @@ services:
     - 3100:3100
     command: 
     - '-config.file=/mnt/config/loki-config.yml'
+
+  promtail:
+    image: grafana/promtail:2.3.0
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+    - /var/log/:/var/log/:ro
+    - /home/:/home_server:ro
+    - /root/:/root_user:ro
+    - ./promtail.yml:/etc/promtail/promtail.yml
+    - promtail-data:/tmp
+    command: -config.file=/etc/promtail/promtail.yml
     
   app_example:
     image: nets-test
